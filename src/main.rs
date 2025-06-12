@@ -1,25 +1,17 @@
 mod cli;
 mod commands;
-mod config;
+mod utils;
 
-use crate::config::AppConfig;
-use crate::config::CONFIG;
 use clap::Parser;
 use cli::{Command, PacksyCli};
+use commands::init;
 
 fn main() {
-    let pkglist_path = dirs_next::config_dir().unwrap().join("packsy/pkglist");
-
-    CONFIG.set(AppConfig { pkglist_path }).unwrap();
-
     let args = PacksyCli::parse();
 
     match args.command {
-        Some(Command::List) => {
-            commands::list::run();
-        }
         Some(Command::Init) => {
-            commands::init::run();
+            init::run();
         }
         None => {
             eprintln!("No command provided. Use --help.");

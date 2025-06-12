@@ -1,19 +1,21 @@
 use std::{
-    fs::{self, File},
+    fs::File,
     io::{BufWriter, Write},
     process::Command,
 };
 
-use crate::config::CONFIG;
+use crate::{error, step, substep_last, success};
 
 pub fn run() {
+    step!("Initializing pkglist");
+
     let output = Command::new("pacman")
         .args(&["-Qe"])
         .output()
         .expect("Failed to execute pacman");
 
     if !output.status.success() {
-        eprintln!("pacman -Qe failed with: {:?}", output.status);
+        error!("pacman -Qe failed with: {:?}", output.status);
         std::process::exit(1);
     }
 
@@ -23,18 +25,19 @@ pub fn run() {
         .map(|line| line.split_whitespace().next().unwrap())
         .collect();
 
-    let config = CONFIG.get().expect("Appconfig not initialized");
+    let file = File::create("pkglist").unwrap_or_else(|_| {
+        error!("Could not create pkglist");
+        std::process::exit(1);
+    });
 
-    fs::create_dir_all(config.pkglist_path.parent().unwrap())
-        .expect("Failed to create config directory");
-
-    let file = File::create(&config.pkglist_path).expect("Failed to create file");
     let mut writer = BufWriter::new(file);
+
+    substep_last!("Writing {} packages", packages.len());
 
     writeln!(writer, "[system]").unwrap();
     for pkg in &packages {
         writeln!(writer, "pack {}", pkg).unwrap();
     }
 
-    println!("Created packsy.lock with {} packages", packages.len());
+    success!("Created 'pkglist'");
 }
