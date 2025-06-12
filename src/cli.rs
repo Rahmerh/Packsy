@@ -10,4 +10,5 @@ pub struct PacksyCli {
 #[derive(Subcommand, Debug)]
 pub enum Command {
     List,
+    Init,
 }
