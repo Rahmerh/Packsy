@@ -9,5 +9,9 @@ It installs packages from a list and optionally removes those not listed—keepi
 
 Coming soon...
 
+## License
+
+[MIT](https://github.com/Rahmerh/Packsy/raw/main/LICENSE)
+
 ## Credits
 - **ChatGPT** for teaching me rust and generating images.
